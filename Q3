@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_NAME 50
+#define MAX_LINE 100
+
+// check that name is non-empty, printable and has no digits
+int is_valid_name(const char *name)
+{
+    int i;
+
+    if (name[0] == '\0')
+        return 0;
+
+    for (i = 0; name[i] != '\0'; i++) {
+        unsigned char c = (unsigned char)name[i];
+
+        if (!isprint(c))          // not printable
+            return 0;
+        if (isdigit(c))           // numbers not allowed in name
+            return 0;
+    }
+    return 1;
+}
+
+int main(void)
+{
+    FILE *fp;
+    char line[MAX_LINE];
+    char name[MAX_NAME];
+    int mark;
+
+    int valid = 0;
+    int corrupted = 0;
+    int sumMarks = 0;
+
+    fp = fopen("students.txt", "r");
+    if (fp == NULL) {
+        printf("Error: file not found.\n");
+        return 0;
+    }
+
+    printf("Valid Records:\n");
+
+    // read file line by line
+    while (fgets(line, sizeof(line), fp) != NULL) {
+
+        // try to extract name + mark
+        if (sscanf(line, "%s %d", name, &mark) == 2 && is_valid_name(name)) {
+            // valid record
+            printf("%s %d\n", name, mark);
+            valid++;
+            sumMarks += mark;
+        } else {
+            // missing field, non-integer mark, or bad name
+            corrupted++;
+        }
+    }
+
+    fclose(fp);
+
+    printf("\nTotal valid records: %d\n", valid);
+    printf("Total corrupted records: %d\n", corrupted);
+
+    if (valid > 0)
+        printf("Average mark: %.2f\n", (float)sumMarks / valid);
+    else
+        printf("Average mark: N/A\n");
+
+    return 0;
+}
