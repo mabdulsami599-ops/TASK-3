@@ -1,0 +1,82 @@
+#include <stdio.h>
+
+//ITERATIVE VERSION
+void rearrange_iterative(int arr[], int n)
+{
+    int temp[100];          // temporary array 
+    int index_odd = 0;      // next position for the odd number
+    int index_even = n - 1; // next position for the even number 
+
+    // Scan input array 
+    for (int i = 0; i < n; i++) {
+        if (arr[i] % 2 != 0) {        // odd
+            temp[index_odd++] = arr[i];
+        } else {                      // even
+            temp[index_even--] = arr[i];
+        }
+    }
+
+    // Copy the result back to the orignal array
+    for (int i = 0; i < n; i++) {
+        arr[i] = temp[i];
+    }
+}
+
+//RECURSIVE VERSION
+void rearrange_recursive_helper(int arr[], int n, int i, int nextOdd)
+{
+   
+    if (i == n)
+        return;
+
+    // If current element is odd, swap 
+    if (arr[i] % 2 != 0) {
+        int temp   = arr[i];
+        arr[i]     = arr[nextOdd];
+        arr[nextOdd] = temp;
+
+        rearrange_recursive_helper(arr, n, i + 1, nextOdd + 1);
+    } else {
+        // Even element: move to the next index
+        rearrange_recursive_helper(arr, n, i + 1, nextOdd);
+    }
+}
+
+void rearrange_recursive(int arr[], int n)
+{
+    rearrange_recursive_helper(arr, n, 0, 0);
+}
+
+int main(void)
+{
+    int n;
+    int arr1[100], arr2[100];
+
+    // input
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    printf("Enter %d integers:\n", n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr1[i]);
+        arr2[i] = arr1[i];   
+    }
+
+ 
+    rearrange_iterative(arr1, n);
+
+    rearrange_recursive(arr2, n);
+
+    //output
+    printf("\nIterative result (odds first, evens later):\n");
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr1[i]);
+    printf("\n");
+
+    printf("\nRecursive result (odds first, evens later):\n");
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr2[i]);
+    printf("\n");
+
+    return 0;
+}
