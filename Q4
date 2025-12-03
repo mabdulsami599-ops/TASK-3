@@ -1,0 +1,87 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+// Template function for calibration
+template <class S>
+S calibrateValue(const S &x, char factor)
+{
+    return x * factor;   // factor is treated as a numeric char 
+}
+
+// Adds an offset to a sensor reading 
+void adjustReading(double *value, double offset = 1.25)
+{
+    *value = *value + offset;
+}
+
+// Clamps value between 0 and 100
+void clampReading(double &r)
+{
+    if (r < 0)
+        r = 0;
+    else if (r > 100)
+        r = 100;
+}
+
+// Computes a - b
+double computeDifference(int a, double b)
+{
+    return a - b;
+}
+
+int main()
+{
+    int intReading;
+    double dblReading;
+
+    // Format: width = 10, precision = 4
+    cout << fixed << setprecision(4);
+
+    // Ask for readings
+    cout << "Enter integer sensor reading: ";
+    cin >> intReading;
+
+    cout << "Enter double sensor reading: ";
+    cin >> dblReading;
+
+    // Calibration factor 
+    char factor = 2;   // multiply by 2
+
+    // Calibrate both readings
+    int calibratedInt = calibrateValue(intReading, factor);
+    double calibratedDbl = calibrateValue(dblReading, factor);
+
+    // Display calibrated values
+    cout << setw(10) << calibratedInt << endl;
+    cout << setw(10) << calibratedDbl << endl;
+
+    // Convert calibrated integer reading to double
+    double intAsDouble = static_cast<double>(calibratedInt);
+
+    // Adjust readings
+    adjustReading(&intAsDouble);          
+    adjustReading(&calibratedDbl, 3.4);   
+
+    // Display adjusted values
+    cout << setw(10) << intAsDouble << endl;
+    cout << setw(10) << calibratedDbl << endl;
+
+    // Clamp both values to [0, 100]
+    clampReading(intAsDouble);
+    clampReading(calibratedDbl);
+
+    // Display clamped values
+    cout << setw(10) << intAsDouble << endl;
+    cout << setw(10) << calibratedDbl << endl;
+
+    // Convert clamped integer reading back to int
+    int finalInt = static_cast<int>(intAsDouble);
+    cout << setw(10) << finalInt << endl;
+
+    // display difference:
+    double diff = computeDifference(finalInt, calibratedDbl);
+    cout << setw(10) << diff << endl;
+
+    return 0;
+}
