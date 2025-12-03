@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_CURR 3
+#define AM_MAX   5000.0f     // maximum local currency 
+
+// Currency data structure
+typedef struct {
+    char code[4];    
+    float rate;      
+} Currency;
+
+/*
+   curr_change meanings:
+   amCur1   = amount in the local currency
+   amMax    = the maximum exchangeable amount
+   excRate  = exchange rate 
+   amCur2   = pointer of amount received in foreign currency
+   leftOver = pointer of leftover local currency if amCur1 is greater than amMax
+*/
+void curr_change(float amCur1, float amMax, float excRate,
+                 float *amCur2, float *leftOver)
+{
+    if (amCur1 <= amMax) {
+        *amCur2  = amCur1 * excRate;
+        *leftOver = 0;
+    } else {
+        *amCur2  = amMax * excRate;
+        *leftOver = amCur1 - amMax;
+    }
+}
+
+int main()
+{
+    // List of the available currencies
+    Currency list[MAX_CURR] = {
+        {"USD", 0.27f},
+        {"EUR", 0.24f},
+        {"GBP", 0.21f}
+    };
+
+    float amount, converted, leftover;
+    int choice;
+
+    printf("Local currency: AED\n");
+    printf("Available foreign currencies:\n");
+    for (int i = 0; i < MAX_CURR; i++)
+        printf("%d. %s (the rateis : %.2f)\n", i+1, list[i].code, list[i].rate);
+
+    // Choose target currency
+    printf("Choose currency", MAX_CURR);
+    scanf("%d", &choice);
+
+    if (choice < 1 || choice > MAX_CURR) {
+        printf("Invalid choice.\n");
+        return 0;
+    }
+
+    // Amount validation
+    printf("Enter amount in AED: ");
+    scanf("%f", &amount);
+
+    if (amount <= 0) {
+        printf("Invalid amount.\n");
+        return 0;
+    }
+
+    // Perform the conversion
+    curr_change(amount, AM_MAX, list[choice-1].rate, &converted, &leftover);
+
+    // Output the results
+    printf("\nExchange rate: 1 AED = %.2f %s\n",
+           list[choice-1].rate, list[choice-1].code);
+
+    printf("Converted amount: %.2f %s\n", converted, list[choice-1].code);
+    printf("Leftover amount: %.2f AED\n", leftover);
+
+    return 0;
+}
